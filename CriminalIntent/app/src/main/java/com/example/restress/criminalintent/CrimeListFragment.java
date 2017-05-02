@@ -20,6 +20,9 @@ import java.util.List;
  */
 
 public class CrimeListFragment extends Fragment {
+    private static final int REQUEST_CRIME = 1;
+    public static final String CHANGE_CRIME_POSITION = "com.example.restress.criminalintent.crimelistfragment";
+
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
 
@@ -38,12 +41,23 @@ public class CrimeListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        updateUI();
+    }
+
     private void updateUI(){
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
 
-        mAdapter = new CrimeAdapter(crimes);
-        mCrimeRecyclerView.setAdapter(mAdapter);
+        if (mAdapter == null){
+            mAdapter = new CrimeAdapter(crimes);
+            mCrimeRecyclerView.setAdapter(mAdapter);
+        }else {
+            mAdapter.notifyDataSetChanged();//adapter自带的刷新界面的方法。
+        }
+
 
     }
 
@@ -56,8 +70,6 @@ public class CrimeListFragment extends Fragment {
         public CrimeHolder(View itemView){
             super(itemView);
             itemView.setOnClickListener(this);
-
-            
 
             mTitleTextView = (TextView)
                     itemView.findViewById(R.id.list_item_crime_title_text_view);
@@ -72,8 +84,9 @@ public class CrimeListFragment extends Fragment {
 
             /*Toast.makeText(getActivity(),mCrime.getTitle() + " clicked!", Toast.LENGTH_SHORT).show();*/
            /* Intent intent = new Intent(getActivity(),CrimeActivity.class);*/
-           Intent intent = CrimeActivity.newIntent(getActivity(),mCrime.getId());
-            startActivity(intent);
+           /*Intent intent = CrimeActivity.newIntent(getActivity(),mCrime.getId());*/
+            Intent intent = CrimePagerActivity.newIntent(getActivity(),mCrime.getId());
+           startActivityForResult(intent,REQUEST_CRIME);
 
         }
         
@@ -84,6 +97,13 @@ public class CrimeListFragment extends Fragment {
             mSolvedCheckBox.setChecked(mCrime.isSolved());
         }
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode,int resultCode,Intent data){
+        if (requestCode == REQUEST_CRIME){
+            //Handle result
+        }
     }
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder>{

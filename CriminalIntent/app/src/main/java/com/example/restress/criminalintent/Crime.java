@@ -19,9 +19,14 @@ public class Crime {
         mSolved = solved;
     }
 
+    public void setDate(Date date) {
+        mDate = date;
+    }
+
     public UUID getId() {
 
         return mId;
+
     }
 
     public String getTitle() {
